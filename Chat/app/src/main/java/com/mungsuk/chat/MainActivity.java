@@ -2,18 +2,19 @@ package com.mungsuk.chat;
 
 import static java.lang.System.out;
 
-import androidx.appcompat.app.AppCompatActivity;
+//import androidx.appcompat.app.AppCompatActivity;
 
 import android.app.Activity;
 import android.os.Bundle;
 import java.io.BufferedReader;
-import java.io.BufferedWriter;
+//import java.io.BufferedWriter;
 import java.io.IOException;
 //import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
-import java.net.InetAddress;
+//import java.net.InetAddress;
+//import java.net.ServerSocket;
 import java.net.Socket;
 //import java.net.URL;
 //import java.net.URLConnection;
@@ -43,17 +44,25 @@ public class MainActivity extends Activity {
     private Socket socket;
     private String name;
     private BufferedReader networkReader;
-    private BufferedWriter networkWriter;
-    private String ip = "";// IP
+    private PrintWriter networkWriter;
+    private String ip = "127.0.0.1";// IP
     private int port = 9999;// PORT번호
+    private Thread update;
 
     @Override
     protected void onStop() {
         super.onStop();
 
-        try{
-            socket.close();
-        }catch(IOException e) {
+        try {
+            // 스레드를 안전하게 종료
+            update.interrupt();
+            update.join();
+
+            // 소켓 닫기
+            if (socket != null && socket.isConnected()) {
+                socket.close();
+            }
+        } catch (IOException | InterruptedException e) {
             e.printStackTrace();
         }
     }
@@ -61,14 +70,17 @@ public class MainActivity extends Activity {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        // MainActivity에서 소켓 생성하기 위해선 필요한 코드
         StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
         StrictMode.setThreadPolicy(policy);
+
         setContentView(R.layout.activity_main);
         mHandler = new Handler();
 
-        setSocket.start();
+        setSocket();
 
-        checkUpdate.start();
+//        checkUpdate.start();
 
         final EditText et = (EditText) findViewById(R.id.EditText01);
         Button btn = (Button) findViewById(R.id.Button01);
@@ -79,9 +91,12 @@ public class MainActivity extends Activity {
                 out.println("전송버튼 눌림");
                 if((et.getText().toString() != null
                         || !et.getText().toString().equals("")) && networkWriter != null) {
-                    PrintWriter out = new PrintWriter(networkWriter,true);
+//                    PrintWriter out = new PrintWriter(networkWriter,true);
                     String return_msg = et.getText().toString();
-                    out.println(return_msg);
+                    System.out.println("클라이언트가 보낸 메세지 : " + return_msg);
+                    networkWriter.println(return_msg);
+                    networkWriter.flush();
+                    checkUpdate();
                 } else if(networkWriter == null){
                     out.println("networkWriter가 null 임");
                 }
@@ -90,23 +105,46 @@ public class MainActivity extends Activity {
         });
     }
 
-    private Thread checkUpdate = new Thread() {
-        public void run() {
+    private void checkUpdate(){
+
             try{
                 String line = null;
                 Log.w("ChattingStart", "Start Thread");
-                while(true) {
-
+                while((line = networkReader.readLine()) != null) {
                     Log.w("Chatting is running", "chatting is running");
-                    html = networkReader.readLine();
+
+                    html = line;
                     out.println(html);
                     mHandler.post(showUpdate);
-                }
 
+                }
+                if((line = networkReader.readLine()) == null){
+                    Log.w("Error", "아무 값도 안들어옴");
+                }
             }catch(Exception e) {
+                e.printStackTrace();
             }
-        }
+
     };
+
+//    private Thread checkUpdate = new Thread() {
+//        public void run() {
+//            try{
+//                String line = null;
+//                Log.w("ChattingStart", "Start Thread");
+//                while((line = networkReader.readLine()) != null) {
+//                    Log.w("Chatting is running", "chatting is running");
+//
+//                        html = line;
+//                        out.println(html);
+//                        mHandler.post(showUpdate);
+//
+//                }
+//            }catch(Exception e) {
+//                e.printStackTrace();
+//            }
+//        }
+//    };
 
     private Runnable showUpdate = new Runnable() {
         public void run() {
@@ -115,22 +153,21 @@ public class MainActivity extends Activity {
         }
     };
 
-    private Thread setSocket = new Thread() {
-        public void run(){
+
+    public void setSocket(){
             try {
                 Log.w("Creating Socket", "소켓생성중....");
-                socket = new Socket(InetAddress.getLocalHost().getHostAddress(), port);
+                socket = new Socket(ip, port);
                 Log.w("Creating Socket", "소켓생성됨!!");
-                networkWriter =
-                        new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
-                networkReader =
-                        new BufferedReader(new InputStreamReader(socket.getInputStream()));
+                networkWriter = new PrintWriter(new OutputStreamWriter(socket.getOutputStream()));
+                networkReader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
 
             }catch(IOException e) {
                 out.println(e);
                 e.printStackTrace();
             }
-        }
-    };
+    }
+
+
 }
 
