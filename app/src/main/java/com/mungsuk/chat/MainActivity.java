@@ -48,6 +48,7 @@ public class MainActivity extends Activity {
     private String ip = "127.0.0.1";// IP
     private int port = 9999;// PORT번호
     private Thread update;
+    TextView tv = null;
 
     @Override
     protected void onStop() {
@@ -84,7 +85,7 @@ public class MainActivity extends Activity {
 
         final EditText et = (EditText) findViewById(R.id.EditText01);
         Button btn = (Button) findViewById(R.id.Button01);
-        final TextView tv = (TextView) findViewById(R.id.TextView01);
+        tv = (TextView) findViewById(R.id.chatting);
 
         btn.setOnClickListener(new OnClickListener() {
             public void onClick(View v) {
@@ -116,7 +117,13 @@ public class MainActivity extends Activity {
                         html = line;
                         out.println(html);
                         mHandler.post(showUpdate);
-
+//                        tv.append(html);
+                        mHandler.post(new Runnable() {
+                            @Override
+                            public void run() {
+                                tv.append(html + "\n");
+                            }
+                        });
                 }
             }catch(Exception e) {
                 e.printStackTrace();

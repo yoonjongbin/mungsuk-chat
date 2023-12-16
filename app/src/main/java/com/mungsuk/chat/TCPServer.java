@@ -29,7 +29,7 @@ public class TCPServer implements Runnable {
                         while((str = in.readLine()) != null){
                             System.out.println("S: Received: '" + str + "'");
                             PrintWriter out = new PrintWriter(new BufferedWriter(new OutputStreamWriter(client.getOutputStream())),true);
-                            out.println("Server Received " + str);
+                            out.println("Server Received : " + str);
                         }
 
                     } catch(Exception e) {
