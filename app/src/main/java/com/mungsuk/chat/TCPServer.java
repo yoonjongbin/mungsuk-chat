@@ -24,13 +24,14 @@ public class TCPServer implements Runnable {
                     System.out.println("S: Receiving...");
 
                     try {
-                        BufferedReader in = new BufferedReader(
-                        new InputStreamReader(client.getInputStream()));
-                        String str = in.readLine();
-                        System.out.println("S: Received: '" + str + "'");
-                        PrintWriter out = new PrintWriter(new BufferedWriter(
-                        new OutputStreamWriter(client.getOutputStream())),true);
-                        out.println("Server Received " + str);
+                        BufferedReader in = new BufferedReader(new InputStreamReader(client.getInputStream()));
+                        String str = null;
+                        while((str = in.readLine()) != null){
+                            System.out.println("S: Received: '" + str + "'");
+                            PrintWriter out = new PrintWriter(new BufferedWriter(new OutputStreamWriter(client.getOutputStream())),true);
+                            out.println("Server Received " + str);
+                        }
+
                     } catch(Exception e) {
                         System.out.println("S: Error");
                         e.printStackTrace();
