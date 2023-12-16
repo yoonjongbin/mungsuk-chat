@@ -80,7 +80,7 @@ public class MainActivity extends Activity {
 
         setSocket();
 
-//        checkUpdate.start();
+        checkUpdate.start();
 
         final EditText et = (EditText) findViewById(R.id.EditText01);
         Button btn = (Button) findViewById(R.id.Button01);
@@ -113,38 +113,16 @@ public class MainActivity extends Activity {
                 while((line = networkReader.readLine()) != null) {
                     Log.w("Chatting is running", "chatting is running");
 
-                    html = line;
-                    out.println(html);
-                    mHandler.post(showUpdate);
+                        html = line;
+                        out.println(html);
+                        mHandler.post(showUpdate);
 
-                }
-                if((line = networkReader.readLine()) == null){
-                    Log.w("Error", "아무 값도 안들어옴");
                 }
             }catch(Exception e) {
                 e.printStackTrace();
             }
-
+        }
     };
-
-//    private Thread checkUpdate = new Thread() {
-//        public void run() {
-//            try{
-//                String line = null;
-//                Log.w("ChattingStart", "Start Thread");
-//                while((line = networkReader.readLine()) != null) {
-//                    Log.w("Chatting is running", "chatting is running");
-//
-//                        html = line;
-//                        out.println(html);
-//                        mHandler.post(showUpdate);
-//
-//                }
-//            }catch(Exception e) {
-//                e.printStackTrace();
-//            }
-//        }
-//    };
 
     private Runnable showUpdate = new Runnable() {
         public void run() {
