@@ -96,7 +96,6 @@ public class MainActivity extends Activity {
                     System.out.println("클라이언트가 보낸 메세지 : " + return_msg);
                     networkWriter.println(return_msg);
                     networkWriter.flush();
-                    checkUpdate();
                 } else if(networkWriter == null){
                     out.println("networkWriter가 null 임");
                 }
@@ -105,8 +104,9 @@ public class MainActivity extends Activity {
         });
     }
 
-    private void checkUpdate(){
 
+    private Thread checkUpdate = new Thread() {
+        public void run() {
             try{
                 String line = null;
                 Log.w("ChattingStart", "Start Thread");
@@ -158,7 +158,12 @@ public class MainActivity extends Activity {
             try {
                 Log.w("Creating Socket", "소켓생성중....");
                 socket = new Socket(ip, port);
-                Log.w("Creating Socket", "소켓생성됨!!");
+                if(socket != null){
+                    Log.w("Creating Socket", "소켓생성됨!!");
+                } else{
+                    Log.w("Creating Socket", "소켓 생성중 오류생김");
+                }
+
                 networkWriter = new PrintWriter(new OutputStreamWriter(socket.getOutputStream()));
                 networkReader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
 
@@ -170,4 +175,3 @@ public class MainActivity extends Activity {
 
 
 }
-
