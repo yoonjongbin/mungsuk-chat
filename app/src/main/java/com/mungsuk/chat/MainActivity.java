@@ -45,7 +45,8 @@ public class MainActivity extends Activity {
     private String name;
     private BufferedReader networkReader;
     private PrintWriter networkWriter;
-    private String ip = "127.0.0.1";// IP
+//    private String ip = "127.0.0.1";// IP
+    private String ip = "192.168.0.14";// IP
     private int port = 9999;// PORT번호
     private Thread update;
     TextView tv = null;
