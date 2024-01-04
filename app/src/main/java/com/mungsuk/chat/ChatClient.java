@@ -97,6 +97,7 @@ public class ChatClient extends Activity {
                     System.out.println("클라이언트가 보낸 메세지 : " + return_msg);
                     networkWriter.println(nickName + "님이 보낸 메세지 : " + return_msg);
                     networkWriter.flush();
+                    et.setText("");
                 } else if(networkWriter == null){
                     out.println("networkWriter가 null 임");
                 }
