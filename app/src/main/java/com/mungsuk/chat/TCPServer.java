@@ -25,7 +25,7 @@ public class TCPServer implements Runnable {
         this.socket = socket;
 
         try {
-            in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+            in = new BufferedReader(new InputStreamReader(socket.getInputStream(),"EUC_KR"));
             out = new PrintWriter(socket.getOutputStream());
             list.add(out);
         } catch (IOException e){
@@ -34,6 +34,7 @@ public class TCPServer implements Runnable {
     }
 
     public void sendAll(String msg){
+        // 모든 클라이언트의 출력스트림을 통해서 readLine으로 읽은 메세지 전송
         for(PrintWriter out : list){
             out.println(msg);
             out.flush();
@@ -46,15 +47,40 @@ public class TCPServer implements Runnable {
         @Override
         public void run() {
 
-        String login = socket.getInetAddress() + "'s is connected!!";
-        sendAll(login);
+//        String login = "[" + socket.getInetAddress() + "'s] is connected!!";
+
+//        sendAll(login);
 
         while(in != null){
+            String str;
+
+
             try{
-                String str = in.readLine();
-                sendAll("[" + socket.getInetAddress() + "] sent Msg : " + str);
+
+                str = in.readLine();
+
+                if(str == null) {
+                    // 클라이언트와의 접속이 끊겼을때
+                    synchronized (list) {
+                        // 해당 클라이언트 출력스트림 제거
+                        list.remove(out);
+                    }
+//                    System.out.println("[" + socket.getInetAddress() + "'s] is disconnected!");
+//                    sendAll("[" + socket.getInetAddress() + "'s] is disconnected!");
+                    break;
+                }
+
+
+//                System.out.println("[" + socket.getInetAddress() + "] sent Msg : " + str);
+//                sendAll("[" + socket.getInetAddress() + "] sent Msg : " + str);
+                System.out.println(str);
+                sendAll(str);
+
+
             }catch (IOException e){
-                System.out.println(socket.getInetAddress() + "'s is disconnected!");
+                e.printStackTrace();
+                break;
+
             }
 
         }
@@ -96,6 +122,7 @@ public class TCPServer implements Runnable {
                 System.out.println("S: Connecting...");
 
                 while(true){
+                    // 클라이언트가 새로 접속할때마다 해당 클라이언트의 소켓 정보를 담는 새로운 스레드 생성 및 실행
                     Socket socket = serverSocket.accept();
                     Thread server = new Thread(new TCPServer(socket));
                     server.start();
