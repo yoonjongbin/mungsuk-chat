@@ -45,6 +45,8 @@ public class ChatClient extends Activity {
     @Override
     protected void onStop() {
         super.onStop();
+        networkWriter.println(nickName + "님이 퇴장하였습니다!");
+        networkWriter.flush();
 
         try {
             // 스레드를 안전하게 종료
@@ -53,8 +55,7 @@ public class ChatClient extends Activity {
 
             // 소켓 닫기
             if (socket != null && socket.isConnected()) {
-                networkWriter.println(nickName + "님이 퇴장하였습니다!");
-                networkWriter.flush();
+
                 socket.close();
             }
         } catch (IOException | InterruptedException e) {
