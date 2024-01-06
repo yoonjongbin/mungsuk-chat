@@ -6,18 +6,50 @@
 
         <TextView android:id="@+id/TextView01"
         android:layout_height="wrap_content"
-        android:layout_width="fill_parent"/>
+        android:layout_width="fill_parent"
+        android:text="mungsuk Chat"
+        android:gravity="center"
+        android:textSize="30sp"
+        android:textStyle="italic"/>
 
-        <EditText android:id="@+id/EditText01"
-        android:layout_height="wrap_content"
-        android:layout_width="fill_parent"/>
+        <ScrollView
+         android:fillViewport="true"
+         android:layout_height="0dp"
+         android:layout_width="fill_parent"
+         android:layout_weight="1">
+                <LinearLayout
+                    android:id="@+id/chatLog"
+                    android:orientation="vertical"
+                    android:layout_width="fill_parent"
+                    android:layout_height="fill_parent"
+                    android:layout_margin="5dp">
 
-        <Button android:id="@+id/Button01"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="전송"/>
+                </LinearLayout>
 
-        <TextView android:id="@+id/chatting"
-        android:layout_height="wrap_content"
-        android:layout_width="fill_parent"/>
+        </ScrollView>
+
+<!--        <TextView android:id="@+id/chatting"-->
+<!--            android:layout_height="0dp"-->
+<!--            android:layout_width="fill_parent"/>-->
+
+
+        <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="5dp">
+
+                <EditText
+                    android:id="@+id/EditText01"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="4"/>
+
+                <Button android:id="@+id/Button01"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:text="전송"
+                    android:layout_weight="1"/>
+        </LinearLayout>
+
 </LinearLayout>

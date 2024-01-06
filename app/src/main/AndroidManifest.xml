@@ -19,7 +19,8 @@
             </intent-filter>
         </activity>
 
-        <activity android:name=".ChatClient"/>
+        <activity android:name=".ChatClient"
+            android:windowSoftInputMode="adjustResize"/>
     </application>
 
     <uses-permission android:name="android.permission.INTERNET" />

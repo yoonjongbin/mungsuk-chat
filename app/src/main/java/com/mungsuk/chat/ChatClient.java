@@ -4,15 +4,20 @@ import static java.lang.System.out;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.StrictMode;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import org.w3c.dom.Text;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -41,6 +46,9 @@ public class ChatClient extends Activity {
     private Thread update;
     private String nickName;
     TextView tv = null;
+    private String sendMsg = "";
+
+    private LinearLayout chatLog;
 
     @Override
     protected void onStop() {
@@ -86,7 +94,8 @@ public class ChatClient extends Activity {
 
         final EditText et = (EditText) findViewById(R.id.EditText01);
         Button btn = (Button) findViewById(R.id.Button01);
-        tv = (TextView) findViewById(R.id.chatting);
+        chatLog = findViewById(R.id.chatLog);
+//        tv = (TextView) findViewById(R.id.chatting);
 
         btn.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
@@ -96,7 +105,8 @@ public class ChatClient extends Activity {
 //                    PrintWriter out = new PrintWriter(networkWriter,true);
                     String return_msg = et.getText().toString();
                     System.out.println("클라이언트가 보낸 메세지 : " + return_msg);
-                    networkWriter.println(nickName + "님이 보낸 메세지 : " + return_msg);
+                    sendMsg = nickName + "님이 보낸 메세지 : " + return_msg;
+                    networkWriter.println(sendMsg);
                     networkWriter.flush();
                     et.setText("");
                 } else if(networkWriter == null){
@@ -118,12 +128,13 @@ public class ChatClient extends Activity {
 
                     html = line;
                     out.println(html);
-                    mHandler.post(showUpdate);
+//                    mHandler.post(showUpdate);
 //                        tv.append(html);
                     mHandler.post(new Runnable() {
                         @Override
                         public void run() {
-                            tv.append(html + "\n");
+                            createTextView();
+//                            tv.append(html + "\n");
                         }
                     });
                 }
@@ -158,5 +169,32 @@ public class ChatClient extends Activity {
             out.println(e);
             e.printStackTrace();
         }
+    }
+
+    private void createTextView(){
+        System.out.println(sendMsg + " : " + html);
+
+        // TextView 객체 생성
+        TextView createLog = new TextView(getApplicationContext());
+
+        // createLog의 너비를 동적으로 수정
+        LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT,
+                                                                                LinearLayout.LayoutParams.WRAP_CONTENT);
+
+        createLog.setLayoutParams(layoutParams);
+
+        if(sendMsg.equals(html)){ // 만약 보낸메세지랑 돌아온 메세지가 같으면
+            createLog.setText(html);
+            createLog.setGravity(Gravity.END);
+//            createLog.setBackgroundColor(Color.rgb(255, 0, 0));
+            chatLog.addView(createLog);
+        }else{  // 만약 보낸메세지랑 돌아온 메세지가 다르면
+            createLog.setText(html);
+            createLog.setGravity(Gravity.START);
+//            createLog.setBackgroundColor(Color.rgb(0, 255, 0));
+            chatLog.addView(createLog);
+        }
+
+
     }
 }
